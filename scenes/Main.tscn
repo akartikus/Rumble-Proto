@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/Planet.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scripts/Main.cs" type="Script" id=3]
+[ext_resource path="res://scenes/Bullet.tscn" type="PackedScene" id=4]
 
 [node name="Main" type="Node2D"]
 script = ExtResource( 3 )
@@ -16,6 +17,7 @@ color = Color( 0.054902, 0.0941176, 0.172549, 1 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 260, 230 )
+BulletScene = ExtResource( 4 )
 
 [connection signal="OnPlayerExit" from="Planet" to="." method="PlayerFallDown"]
 [connection signal="ReStartFight" from="Player" to="." method="StartFight"]

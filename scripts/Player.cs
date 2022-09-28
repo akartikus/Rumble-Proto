@@ -5,6 +5,7 @@ using System.Linq;
 public class Player : KinematicBody2D
 {
     [Export] public int speed = 200;
+    [Export] public PackedScene BulletScene;
 
     [Signal] public delegate void ReStartFight(Player player);
 
@@ -16,9 +17,10 @@ public class Player : KinematicBody2D
     public void GetInput()
     {
         velocity = new Vector2();
-
+        var animatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
         if (_isAlive)
         {
+            // Movement inputs
             if (Input.IsActionPressed("right"))
                 velocity.x += 1;
 
@@ -30,10 +32,25 @@ public class Player : KinematicBody2D
 
             if (Input.IsActionPressed("up"))
                 velocity.y -= 1;
+
+
+            // Fighting inputs
+            if (Input.IsActionJustPressed("shoot"))
+            {
+                int degree = 0;
+                if (lastVelocity.x != 0)
+                {
+                    degree = velocity.x > 0 ? 0 : 180;
+                }
+                else if (lastVelocity.y != 0)
+                {
+                    degree = velocity.y > 0 ? 90 : 270;
+                }
+                Shoot(degree);
+            }
         }
 
 
-        var animatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
 
         if (velocity.Length() > 0)
         {
@@ -104,5 +121,13 @@ public class Player : KinematicBody2D
             tween.InterpolateProperty(GetNode<AnimatedSprite>("AnimatedSprite"), "modulate:a", 0, 1, 0.2f);
             tween.Start();
         }
+    }
+
+    private void Shoot(int degree)
+    {
+        var bullet = (Bullet)BulletScene.Instance();
+        bullet.RotationDegrees = degree;
+
+        AddChild(bullet);
     }
 }

@@ -17,6 +17,7 @@ public class Main : Node2D
         player.KillMe();
     }
 
+    // [connection signal="ReStartFight" from="Player"]
     public void StartFight(Player player)
     {
         player.Position = _initialPosition;
