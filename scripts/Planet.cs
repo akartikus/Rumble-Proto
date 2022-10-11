@@ -10,7 +10,6 @@ public class Planet : Area2D
         if (body is Player)
         {
             EmitSignal(nameof(OnPlayerExit), body);
-            GD.Print("On exit from Planet: " + body.Name);
         }
 
     }

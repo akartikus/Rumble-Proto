@@ -5,9 +5,13 @@ using System.Linq;
 public class Player : KinematicBody2D
 {
     [Export] public int speed = 200;
+    [Export] public int life = 3;
+    [Export] public PackedScene BulletScene;
 
     [Signal] public delegate void ReStartFight(Player player);
+    [Signal] public delegate void OnDying(Player player);
 
+    private String _name { get; set; } = "Ropert";
     private bool _isAlive = true;
 
     public Vector2 velocity = new Vector2();
@@ -16,9 +20,10 @@ public class Player : KinematicBody2D
     public void GetInput()
     {
         velocity = new Vector2();
-
+        var animatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
         if (_isAlive)
         {
+            // Movement inputs
             if (Input.IsActionPressed("right"))
                 velocity.x += 1;
 
@@ -30,10 +35,23 @@ public class Player : KinematicBody2D
 
             if (Input.IsActionPressed("up"))
                 velocity.y -= 1;
+
+
+            // Fighting inputs
+            if (Input.IsActionJustPressed("shoot"))
+            {
+                int degree = 0;
+                if (lastVelocity.x != 0)
+                {
+                    degree = lastVelocity.x > 0 ? 0 : 180;
+                }
+                else if (lastVelocity.y != 0)
+                {
+                    degree = lastVelocity.y > 0 ? 90 : 270;
+                }
+                Shoot(degree);
+            }
         }
-
-
-        var animatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
 
         if (velocity.Length() > 0)
         {
@@ -67,7 +85,7 @@ public class Player : KinematicBody2D
     public void KillMe()
     {
         this._isAlive = false;
-
+        this.life--;
         var tween = GetNode<Tween>("DeadTween");
         tween.InterpolateProperty(
             this,
@@ -82,15 +100,25 @@ public class Player : KinematicBody2D
 
         var timer = GetNode<Timer>("DeadTimer");
         timer.Start();
+
     }
 
     public void OnDeadTimerTimeout()
     {
+        GD.Print("Life left " + life);
         GetNode<Tween>("DeadTween").Stop(this);
-        _isAlive = true;
+        if (life > 0)
+        {
+            _isAlive = true;
 
-        EmitSignal(nameof(ReStartFight), this);
-        BlinkMe();
+            EmitSignal(nameof(ReStartFight), this);
+            BlinkMe();
+        }
+        else
+        {
+            EmitSignal(nameof(OnDying), this);
+        }
+
     }
 
     private async void BlinkMe()
@@ -104,5 +132,13 @@ public class Player : KinematicBody2D
             tween.InterpolateProperty(GetNode<AnimatedSprite>("AnimatedSprite"), "modulate:a", 0, 1, 0.2f);
             tween.Start();
         }
+    }
+
+    private void Shoot(int degree)
+    {
+        var bullet = (Bullet)BulletScene.Instance();
+        bullet.RotationDegrees = degree;
+
+        AddChild(bullet);
     }
 }

@@ -13,13 +13,18 @@ public class Main : Node2D
 
     public void PlayerFallDown(Player player)
     {
-        GD.Print("On exit from Main: " + player.Name);
         player.KillMe();
     }
 
+    // [connection signal="ReStartFight" from="Player"]
     public void StartFight(Player player)
     {
         player.Position = _initialPosition;
         // TODO Some fight initialisations
+    }
+    // [connection signal="OnDying" from="Player"]
+    public void PlayerDying(Player player)
+    {
+        GD.Print("I am dead " + player.Name);
     }
 }

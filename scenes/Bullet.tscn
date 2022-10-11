@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/environements/bulletBlueSilver_outline.png" type="Texture" id=1]
+[ext_resource path="res://assets/environements/bulletBlueSilver.png" type="Texture" id=2]
+[ext_resource path="res://scripts/Bullet.cs" type="Script" id=3]
+
+[sub_resource type="SpriteFrames" id=1]
+animations = [ {
+"frames": [ ExtResource( 2 ), ExtResource( 1 ) ],
+"loop": true,
+"name": "blink",
+"speed": 6.0
+} ]
+
+[sub_resource type="CapsuleShape2D" id=2]
+radius = 7.0
+height = 22.0
+
+[node name="Bullet" type="Area2D"]
+script = ExtResource( 3 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+rotation = 1.5708
+frames = SubResource( 1 )
+animation = "blink"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.5708
+shape = SubResource( 2 )
+
+[node name="VisibilityNotifier2D" type="VisibilityNotifier2D" parent="."]
+position = Vector2( -8, -1.19209e-07 )
+scale = Vector2( 0.5, 0.6 )
+
+[connection signal="screen_exited" from="VisibilityNotifier2D" to="." method="OnVisibilityNotifierScreenExited"]
