@@ -40,17 +40,15 @@ public class Player : KinematicBody2D
                 int degree = 0;
                 if (lastVelocity.x != 0)
                 {
-                    degree = velocity.x > 0 ? 0 : 180;
+                    degree = lastVelocity.x > 0 ? 0 : 180;
                 }
                 else if (lastVelocity.y != 0)
                 {
-                    degree = velocity.y > 0 ? 90 : 270;
+                    degree = lastVelocity.y > 0 ? 90 : 270;
                 }
                 Shoot(degree);
             }
         }
-
-
 
         if (velocity.Length() > 0)
         {
