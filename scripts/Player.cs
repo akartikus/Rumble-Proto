@@ -5,10 +5,13 @@ using System.Linq;
 public class Player : KinematicBody2D
 {
     [Export] public int speed = 200;
+    [Export] public int life = 3;
     [Export] public PackedScene BulletScene;
 
     [Signal] public delegate void ReStartFight(Player player);
+    [Signal] public delegate void OnDying(Player player);
 
+    private String _name { get; set; } = "Ropert";
     private bool _isAlive = true;
 
     public Vector2 velocity = new Vector2();
@@ -82,7 +85,7 @@ public class Player : KinematicBody2D
     public void KillMe()
     {
         this._isAlive = false;
-
+        this.life--;
         var tween = GetNode<Tween>("DeadTween");
         tween.InterpolateProperty(
             this,
@@ -97,15 +100,25 @@ public class Player : KinematicBody2D
 
         var timer = GetNode<Timer>("DeadTimer");
         timer.Start();
+
     }
 
     public void OnDeadTimerTimeout()
     {
+        GD.Print("Life left " + life);
         GetNode<Tween>("DeadTween").Stop(this);
-        _isAlive = true;
+        if (life > 0)
+        {
+            _isAlive = true;
 
-        EmitSignal(nameof(ReStartFight), this);
-        BlinkMe();
+            EmitSignal(nameof(ReStartFight), this);
+            BlinkMe();
+        }
+        else
+        {
+            EmitSignal(nameof(OnDying), this);
+        }
+
     }
 
     private async void BlinkMe()

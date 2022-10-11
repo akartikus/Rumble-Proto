@@ -20,4 +20,5 @@ position = Vector2( 260, 230 )
 BulletScene = ExtResource( 4 )
 
 [connection signal="OnPlayerExit" from="Planet" to="." method="PlayerFallDown"]
+[connection signal="OnDying" from="Player" to="." method="PlayerDying"]
 [connection signal="ReStartFight" from="Player" to="." method="StartFight"]
